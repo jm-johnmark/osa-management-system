@@ -3,8 +3,8 @@
         <div class="row">
             <nav>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
-                    <li class="breadcrumb-item active">User List</li>
+                    <li class="breadcrumb-item">Pages</li>
+                    <li class="breadcrumb-item active">Offenses List</li>
                 </ol>
             </nav>
 
@@ -13,7 +13,7 @@
 
                     <div class="col-sm-12" style="padding: 10px;">
                         <div class="btn-group" role="group" aria-label="Basic mixed styles example" style="float: right;">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddUsers">Add</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdd">Add</button>
                             <button type="button" class="btn btn-danger" onclick="delete_entry()">Delete</button>
                         </div>
                     </div>
@@ -24,8 +24,11 @@
                                 <tr>
                                     <th scope="col"><input type="checkbox" onchange="checkAll(this, 'check_user')"></th>
                                     <th scope="col"></th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Username</th>
+                                    <th scope="col">Violation</th>
+                                    <th scope="col">Student</th>
+                                    <th scope="col">Sanction</th>
+                                    <th scope="col">Academic Year</th>
+                                    <th scope="col">Description</th>
                                     <th scope="col">Date Added</th>
                                 </tr>
                             </thead>
@@ -38,11 +41,10 @@
     </div>
 </div>
 
-<?php require_once 'views/modals/add_user.php'; ?>
-<?php require_once 'views/modals/update_user.php'; ?>
+<?php require_once 'views/modals/add_offense.php'; ?>
+<?php require_once 'views/modals/update_offense.php'; ?>
 
 <script type="text/javascript">
-
 $(document).ready(function() { 
 	get_datatable();
 });
@@ -50,7 +52,7 @@ $(document).ready(function() {
 $("#form_submit_update_form").submit(function(e){
     e.preventDefault();
     $("#form_btn_update_form").prop('disabled', true);
-    $("#modalUpdateUsers").modal("hide");
+    $("#modalUpdate").modal("hide");
     Swal.fire({
         title: 'Update',
         text: "Are you sure you want to proceed?",
@@ -60,53 +62,45 @@ $("#form_submit_update_form").submit(function(e){
     }).then((result) => {
         if(result.isConfirmed){
             $.ajax({
-            type:"POST",
-            url:"ajax/update_user.php",
-            data:$("#form_submit_update_form").serialize(),
-            success:function(data){
-                if(data==1){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'All good!',
-                        text: 'User updated successfully!'
-                    });
-                    get_datatable();
-                    }else if(data==2){
+                type:"POST",
+                url:"ajax/update_offense.php",
+                data:$("#form_submit_update_form").serialize(),
+                success:function(data){
+                    if(data==1){
                         Swal.fire({
-                            icon: 'warning',
-                            title: 'Opps!',
-                            text: 'Username Already Used!'
+                            icon: 'success',
+                            title: 'All good!',
+                            text: 'Offenses updated successfully'
                         });
+                        get_datatable();
                     }else{
                         Swal.fire({
                             icon: 'danger',
                             title: 'Opps!',
                             text: 'Failed Query!'
                         });
-                    }
-                    $("#modalUpdateUsers").modal("hide");
                 }
-                
+                $("#form_btn_update_form").prop('disabled', false);
+                }
             });
-            
-            $("#form_btn_update_form").prop('disabled', false);
         }
+        
     });
 });
 
 function show_details_modal(primary_id){
-    $("#modalUpdateUsers").modal('show');
-    $.post("ajax/get_user.php",
+    $("#modalUpdate").modal('show');
+    $.post("ajax/get_offenses.php",
         {
-            user_id:primary_id
+            offense_id:primary_id
         },function(data){
            	var get_data = JSON.parse(data);
-            $("#update_user_id").val(get_data[0].user_id);
-            $("#update_user_fname").val(get_data[0].user_fname);
-            $("#update_user_mname").val(get_data[0].user_mname);
-            $("#update_user_lname").val(get_data[0].user_lname);
-            $("#update_username").val(get_data[0].username);
-            $("#update_password").val(get_data[0].password);
+            $("#update_offense_id").val(get_data[0].offense_id);
+            $("#update_violation_id").val(get_data[0].violation_id);
+            $("#update_student_id").val(get_data[0].student_id);
+            $("#update_sanction_id").val(get_data[0].sanction_id);
+            $("#update_ay_id").val(get_data[0].ay_id);
+            $("#update_offense_desc").val(get_data[0].offense_desc);
     });
 }
 
@@ -124,7 +118,7 @@ function delete_entry(){
         confirmButtonText: 'Proceed'
     }).then((result) => {
         if(result.isConfirmed){
-            $.post("ajax/delete_user.php",
+            $.post("ajax/delete_offenses.php",
             {
                 id:checkedValues
             },function(data){
@@ -132,21 +126,19 @@ function delete_entry(){
                     Swal.fire({
                         icon: 'success',
                         title: 'All good!',
-                        text: 'User deleted successfully!'
+                        text: 'Offenses deleted successfully'
                     });
-                    get_datatable();
+                get_datatable();
                 }else{
                     Swal.fire({
                         icon: 'danger',
                         title: 'Opps!',
-                        text: 'Failed Query!'
+                        text: 'Failed query!'
                     });
                 }   
             });
         }
-    });
-
-    
+    }); 
 }
 
 $("#form_submit_add_form").submit(function(e){
@@ -154,30 +146,25 @@ $("#form_submit_add_form").submit(function(e){
     $("#form_btn_add_form").prop('disabled', true);
     $.ajax({
         type:"POST",
-        url:"ajax/add_user.php",
+        url:"ajax/add_offense.php",
         data:$("#form_submit_add_form").serialize(),
         success:function(data){
             if(data==1){
                 Swal.fire({
                     icon: 'success',
                     title: 'All good!',
-                    text: 'User added successfully!'
+                    text: 'Offenses added successfully'
                 });
             	document.getElementById("form_submit_add_form").reset();
             	get_datatable();
-            }else if(data==2){
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Opps!',
-                    text: 'Username Already Used!'
-                });
             }else{
                 Swal.fire({
                     icon: 'danger',
                     title: 'Opps!',
-                    text: 'Failed Query!!'
+                    text: 'Failed Query!'
                 });
            }
+           $("#modalAdd").modal("hide");
         }
       });
       $("#form_btn_add_form").prop('disabled', false);
@@ -190,25 +177,34 @@ function get_datatable(){
 	    "processing": true,
 	    "ajax":{
 	        "type":"POST",
-	        "url":"ajax/datatables/users.php",
+	        "url":"ajax/datatables/offenses.php",
 	        "dataSrc":"data", 
 	    },
 	    "columns":[
 	    {
 	        "mRender": function(data,type,row){
-	            return "<input type='checkbox' class='delete_check_box' name='check_user' value='"+row.user_id+"'>";                
+	            return "<input type='checkbox' class='delete_check_box' name='check_user' value='"+row.offense_id+"'>";                
 	        }
 	    },
 	    {
 	        "mRender":function(data, type, row){
-	            return "<button class='btn btn-success' style='padding: 5px 5px 5px 8px;' data-toggle='tooltip' title='Update Record' onclick='show_details_modal("+row.user_id+")'>Edit</button>";
+	            return "<button class='btn btn-success' style='padding: 5px 5px 5px 8px;' data-toggle='tooltip' title='Update Record' onclick='show_details_modal("+row.offense_id+")'>Edit</button>";
 	        }
 	    },
 	    {
-	        "data":"name"
+	        "data":"violation_id"
 	    },
-	    {
-	        "data":"username"
+        {
+	        "data":"student_id"
+	    },
+        {
+	        "data":"sanction_id"
+	    },
+        {
+	        "data":"ay_id"
+	    },
+        {
+	        "data":"offense_desc"
 	    },
 	    {
 	        "data":"date_added"
