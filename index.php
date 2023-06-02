@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css">
     <link rel="stylesheet" href="assets/vendor/libs/flatpickr/flatpickr.css" />
 
-    <!-- <link href="assets/vendor/sweet-alert/sweetalert2.min.css" rel="stylesheet"> -->
+    <link href="assets/vendor/sweet-alert/sweetalert2.min.css" rel="stylesheet">
 
     <!-- Form Validation -->
     <link rel="stylesheet" href="assets/vendor/libs/formvalidation/dist/css/formValidation.min.css" />
@@ -47,7 +47,7 @@
     
     <!-- Helpers -->
     <script src="assets/vendor/js/helpers.js"></script>
-    <script src="assets/vendor/js/template-customizer.js"></script>
+    <!-- <script src="assets/vendor/js/template-customizer.js"></script> -->
     <script src="assets/js/config.js"></script>
 
 </head>
